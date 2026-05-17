@@ -18,6 +18,7 @@ import admin.airportmanager.AirportManagerService;
 public class CheolyongMain {
 
 	public static void main(String[] args) {
+		/*
 		Scanner sc = new Scanner(System.in);
 		System.out.println("==========================================");
 		System.out.print("📦 물품 인도에 걸리는 시간을 설정해주세요 (분 단위, 예: 3) : ");
@@ -152,5 +153,6 @@ public class CheolyongMain {
 		} finally {
 			sc.close();
 		}
+		*/
 	}
 }
