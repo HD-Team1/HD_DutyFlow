@@ -14,6 +14,7 @@ import common.OracleConnection;
 import exception.DataNotFoundException;
 import exception.ErrorCode;
 import exception.SystemException;
+import product.dto.ProductDTO;
 
 public class ProductDAO {
   
@@ -389,5 +390,96 @@ public class ProductDAO {
         } catch (SQLException e) {
             throw new SystemException(ErrorCode.DB_CONNECTION, e);
         }
+    }
+    
+
+
+    public List<ProductDTO> getAllProductDtos() throws SystemException {
+
+        String sql = baseSql + "ORDER BY p.productId";
+
+        try (Connection conn = OracleConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            List<ProductDTO> productList = new ArrayList<>();
+
+            while (rs.next()) {
+                productList.add(mapProductDto(rs));
+            }
+
+            return productList;
+
+        } catch (SQLException e) {
+            throw new SystemException(ErrorCode.DB_CONNECTION, e);
+        }
+    }
+
+    public ProductDTO getProductDtoByProductId(int productId) throws SystemException {
+
+        String sql = baseSql + "WHERE p.productId = ?";
+
+        try (Connection conn = OracleConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, productId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapProductDto(rs);
+                }
+
+                return null;
+            }
+
+        } catch (SQLException e) {
+            throw new SystemException(ErrorCode.DB_CONNECTION, e);
+        }
+    }
+
+    public Product getProductByProductId(int productId) throws SystemException {
+
+        String sql = baseSql + "WHERE p.productId = ?";
+
+        try (Connection conn = OracleConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, productId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapProduct(rs);
+                }
+
+                return null;
+            }
+
+        } catch (SQLException e) {
+            throw new SystemException(ErrorCode.DB_CONNECTION, e);
+        }
+    }
+    
+    private ProductDTO mapProductDto(ResultSet rs) throws SQLException {
+
+        Category category = Category.builder()
+                .categoryId(rs.getInt("categoryId"))
+                .categoryName(rs.getString("categoryName"))
+                .depth(rs.getInt("depth"))
+                .build();
+
+        return ProductDTO.builder()
+                .productId(rs.getInt("productId"))
+                .category(category)
+                .productName(rs.getString("productName"))
+                .brandName(rs.getString("brandName"))
+                .capacity(rs.getInt("capacity"))
+                .priceUsd(rs.getBigDecimal("priceUsd"))
+                .priceKrw(rs.getBigDecimal("priceKrw"))
+                .discountRate(rs.getDouble("discountRate"))
+                .hasEvent("Y".equalsIgnoreCase(rs.getString("hasEvent")))
+                .thresholdValue(rs.getInt("thresholdValue"))
+                .finalPriceUsd(rs.getBigDecimal("finalPriceUsd"))
+                .finalPriceKrw(rs.getBigDecimal("finalPriceKrw"))
+                .build();
     }
 }

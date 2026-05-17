@@ -13,7 +13,16 @@ public class MemberService {
     private final MemberDAO memberDAO = new MemberDAO();
     
     private final MembershipService membershipService = new MembershipService();
+    
+    public Member getMemberById(int memberId) {
+        Member member = memberDAO.findById(memberId);
 
+        if (member == null) {
+            throw new ValidationException(ErrorCode.MEMBER_NOT_FOUND);
+        }
+
+        return member;
+    }
     // 회원가입
     public void signup(MemberSignupDTO dto) {
 

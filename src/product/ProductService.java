@@ -156,6 +156,48 @@ public class ProductService {
             throw new BusinessException(ErrorCode.ILLEGAL_STATE);
         }
     }
+ // 회원 쇼핑 화면용 상품 목록 조회
+    public List<ProductDTO> getShoppingProducts() {
+        List<ProductDTO> products = productDAO.getAllProductDtos();
+
+        if (products == null || products.isEmpty()) {
+            throw new DataNotFoundException(ErrorCode.PRODUCT_NOT_FOUND);
+        }
+
+        return products;
+    }
+
+    // 상품 상세 조회
+    public ProductDTO getProductDetail(int productId) {
+        validateProductId(productId);
+
+        ProductDTO product = productDAO.getProductDtoByProductId(productId);
+
+        if (product == null) {
+            throw new DataNotFoundException(ErrorCode.PRODUCT_NOT_FOUND);
+        }
+
+        return product;
+    }
+
+    // 장바구니 담기용 Product 도메인 조회
+    public Product getProductDomainById(int productId) {
+        validateProductId(productId);
+
+        Product product = productDAO.getProductByProductId(productId);
+
+        if (product == null) {
+            throw new DataNotFoundException(ErrorCode.PRODUCT_NOT_FOUND);
+        }
+
+        return product;
+    }
+
+    private void validateProductId(int productId) {
+        if (productId <= 0) {
+            throw new ValidationException(ErrorCode.INVALID_PRODUCT_INPUT);
+        }
+    }
 
     private void validateBrandName(String brandName) {
         if (brandName == null || brandName.trim().isEmpty()) {
